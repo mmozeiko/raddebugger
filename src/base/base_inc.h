@@ -19,5 +19,6 @@
 #include "base_command_line.h"
 #include "base_arena_dev.h"
 #include "base_bits.h"
+#include "base_blake3.h"
 
 #endif // BASE_INC_H

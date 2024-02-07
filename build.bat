@@ -60,8 +60,12 @@ if "%msvc%"=="1"  set only_compile=/c
 if "%clang%"=="1" set only_compile=-c
 if "%msvc%"=="1"  set EHsc=/EHsc
 if "%clang%"=="1" set EHsc=
-if "%msvc%"=="1"  set rc=rc.exe
-if "%clang%"=="1" set rc=llvm-rc.exe
+if "%msvc%"=="1"  set rc=call rc
+if "%clang%"=="1" set rc=call llvm-rc
+if "%msvc%"=="1"  set asm=call ml64 -nologo -c -Zi -Fo
+if "%clang%"=="1" set asm=call ml64 -nologo -c -Zi -Fo
+if "%msvc%"=="1"  set mklib=call lib -nologo
+if "%clang%"=="1" set mklib=call llvm-lib
 
 :: --- Choose Compile/Link Lines ----------------------------------------------
 if "%msvc%"=="1"      set compile_debug=%cl_debug%
@@ -95,6 +99,15 @@ if not "%no_meta%"=="1" (
   metagen.exe || exit /b 1
   popd
 )
+
+:: --- Build BLAKE3 Asm Files -------------------------------------------------
+pushd build
+%asm% blake3_sse2_x86-64_windows_msvc.obj   ..\src\third_party\blake3\blake3_sse2_x86-64_windows_msvc.asm   || exit /b 1
+%asm% blake3_sse41_x86-64_windows_msvc.obj  ..\src\third_party\blake3\blake3_sse41_x86-64_windows_msvc.asm  || exit /b 1
+%asm% blake3_avx2_x86-64_windows_msvc.obj   ..\src\third_party\blake3\blake3_avx2_x86-64_windows_msvc.asm   || exit /b 1
+%asm% blake3_avx512_x86-64_windows_msvc.obj ..\src\third_party\blake3\blake3_avx512_x86-64_windows_msvc.asm || exit /b 1
+%mklib% -out:blake3.lib blake3_*_msvc.obj || exit /b 1
+popd
 
 :: --- Build Everything (@build_targets) --------------------------------------
 pushd build

@@ -4,17 +4,11 @@
 ////////////////////////////////
 //~ rjf: Basic Helpers
 
-#if !defined(BLAKE2_H)
-#define HAVE_SSE2
-#include "third_party/blake2/blake2.h"
-#include "third_party/blake2/blake2b.c"
-#endif
-
 internal U128
 hs_hash_from_data(String8 data)
 {
   U128 u128 = {0};
-  blake2b((U8 *)&u128.u64[0], sizeof(u128), data.str, data.size, 0, 0);
+  blake3(&u128.u64[0], sizeof(u128), data.str, data.size);
   return u128;
 }
 
