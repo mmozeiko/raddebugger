@@ -4398,12 +4398,6 @@ df_eval_from_eval_cfg_table(Arena *arena, DBGI_Scope *scope, DF_CtrlCtx *ctrl_ct
 ////////////////////////////////
 //~ rjf: Evaluation Views
 
-#if !defined(BLAKE2_H)
-#define HAVE_SSE2
-#include "third_party/blake2/blake2.h"
-#include "third_party/blake2/blake2b.c"
-#endif
-
 internal DF_EvalViewKey
 df_eval_view_key_make(U64 v0, U64 v1)
 {
@@ -4415,7 +4409,7 @@ internal DF_EvalViewKey
 df_eval_view_key_from_string(String8 string)
 {
   DF_EvalViewKey key = {0};
-  blake2b((U8 *)&key.u64[0], sizeof(key), string.str, string.size, 0, 0);
+  blake3(&key.u64[0], sizeof(key), string.str, string.size);
   return key;
 }
 

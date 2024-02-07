@@ -4,17 +4,11 @@
 ////////////////////////////////
 //~ rjf: Basic Functions
 
-#if !defined(BLAKE2_H)
-#define HAVE_SSE2
-#include "third_party/blake2/blake2.h"
-#include "third_party/blake2/blake2b.c"
-#endif
-
 internal F_Hash
 f_hash_from_string(String8 string)
 {
   F_Hash result = {0};
-  blake2b((U8 *)&result.u64[0], sizeof(result), string.str, string.size, 0, 0);
+  blake3(&result.u64[0], sizeof(result), string.str, string.size);
   return result;
 }
 

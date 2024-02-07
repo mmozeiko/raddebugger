@@ -4,6 +4,9 @@
 #ifndef BASE_INC_H
 #define BASE_INC_H
 
+// NOTE: this file must come first so clang can correctly do SIMD intrinsic includes
+#include "base_blake3.h"
+
 ////////////////////////////////
 //~ rjf: Base Includes
 

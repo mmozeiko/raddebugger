@@ -16,3 +16,4 @@
 #include "base_command_line.c"
 #include "base_arena_dev.c"
 #include "base_bits.c"
+#include "base_blake3.c"
