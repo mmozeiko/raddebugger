@@ -13693,8 +13693,8 @@ df_gfx_begin_frame(Arena *arena, DF_CmdList *cmds)
             meta_ctrls[] =
             {
               { df_cmd_spec_from_core_cmd_kind(DF_CoreCmdKind_Edit), OS_Key_F2 },
-              { df_cmd_spec_from_core_cmd_kind(DF_CoreCmdKind_Accept), OS_Key_Return },
-              { df_cmd_spec_from_core_cmd_kind(DF_CoreCmdKind_Cancel), OS_Key_Esc },
+              //{ df_cmd_spec_from_core_cmd_kind(DF_CoreCmdKind_Accept), OS_Key_Return },
+              //{ df_cmd_spec_from_core_cmd_kind(DF_CoreCmdKind_Cancel), OS_Key_Esc },
             };
             for(U64 idx = 0; idx < ArrayCount(meta_ctrls); idx += 1)
             {

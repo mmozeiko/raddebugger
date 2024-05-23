@@ -1168,6 +1168,400 @@ DF_VIEW_UI_FUNCTION_DEF(bitmap)
 }
 
 ////////////////////////////////
+
+#include "doom/doomkeys.h"
+
+static const U64 doom_width = 320;
+static const U64 doom_height = 200;
+static U64 doom_frame_index = 0;
+
+extern "C"
+{
+extern U8* I_VideoBuffer;
+extern U8* I_GetPalette(void);
+extern void raddbg_doom_do_frame(float frame_duration);
+extern void raddbg_doom_push_key(uint8_t key_code, int pressed);
+}
+
+static void doom_do_frame(U8* frame)
+{  
+  U64 now_frame = df_frame_index();
+  if (doom_frame_index < now_frame)
+  {
+    doom_frame_index = now_frame;
+
+    UI_EventList *list = ui_events();
+    for(UI_EventNode *n = list->first; n != 0; n = n->next)
+    {
+      int pressed = n->v.kind == UI_EventKind_Press;
+      switch (n->v.key)
+      {
+      case OS_Key_Up:   raddbg_doom_push_key(KEY_UPARROW, pressed); ui_eat_event(list, n); break;
+      case OS_Key_Down: raddbg_doom_push_key(KEY_DOWNARROW, pressed); ui_eat_event(list, n); break;
+      case OS_Key_Left:
+        if (pressed)
+        {
+          if (n->v.modifiers & OS_EventFlag_Alt) raddbg_doom_push_key(KEY_STRAFE_L, pressed);
+          else raddbg_doom_push_key(KEY_LEFTARROW, pressed);
+        }
+        else
+        {
+          raddbg_doom_push_key(KEY_STRAFE_L, pressed);
+          raddbg_doom_push_key(KEY_LEFTARROW, pressed);
+        }
+        ui_eat_event(list, n);
+        break;
+      case OS_Key_Right:
+        if (pressed)
+        {
+          if (n->v.modifiers & OS_EventFlag_Alt) raddbg_doom_push_key(KEY_STRAFE_R, pressed);
+          else raddbg_doom_push_key(KEY_RIGHTARROW, pressed);
+        }
+        else
+        {
+          raddbg_doom_push_key(KEY_STRAFE_R, pressed);
+          raddbg_doom_push_key(KEY_RIGHTARROW, pressed);
+        }
+        ui_eat_event(list, n);
+        break;
+      case OS_Key_Esc:    raddbg_doom_push_key(KEY_ESCAPE, pressed); ui_eat_event(list, n); break;
+      case OS_Key_Return: raddbg_doom_push_key(KEY_ENTER, pressed); ui_eat_event(list, n); break;
+      case OS_Key_W:      raddbg_doom_push_key(KEY_UPARROW, pressed); ui_eat_event(list, n); break;
+      case OS_Key_S:      raddbg_doom_push_key(KEY_DOWNARROW, pressed); ui_eat_event(list, n); break;
+      case OS_Key_A:      raddbg_doom_push_key(KEY_STRAFE_L, pressed); ui_eat_event(list, n); break;
+      case OS_Key_D:      raddbg_doom_push_key(KEY_STRAFE_R, pressed); ui_eat_event(list, n); break;
+      case OS_Key_Space:  raddbg_doom_push_key(KEY_USE, pressed); ui_eat_event(list, n); break;
+      case OS_Key_Ctrl:   raddbg_doom_push_key(KEY_FIRE, pressed); ui_eat_event(list, n); break;
+      case OS_Key_Tab:    raddbg_doom_push_key(KEY_TAB, pressed); ui_eat_event(list, n); break;
+      case OS_Key_Shift:  raddbg_doom_push_key(KEY_RSHIFT, pressed); ui_eat_event(list, n); break;
+      case OS_Key_1:      raddbg_doom_push_key('1', pressed); ui_eat_event(list, n); break;
+      case OS_Key_2:      raddbg_doom_push_key('2', pressed); ui_eat_event(list, n); break;
+      case OS_Key_3:      raddbg_doom_push_key('3', pressed); ui_eat_event(list, n); break;
+      case OS_Key_4:      raddbg_doom_push_key('4', pressed); ui_eat_event(list, n); break;
+      case OS_Key_5:      raddbg_doom_push_key('5', pressed); ui_eat_event(list, n); break;
+      case OS_Key_6:      raddbg_doom_push_key('6', pressed); ui_eat_event(list, n); break;
+      case OS_Key_7:      raddbg_doom_push_key('7', pressed); ui_eat_event(list, n); break;
+      case OS_Key_Y:      raddbg_doom_push_key('y', pressed); ui_eat_event(list, n); break;
+      case OS_Key_N:      raddbg_doom_push_key('n', pressed); ui_eat_event(list, n); break;
+      }
+    }
+
+    raddbg_doom_do_frame(ui_dt());
+  }
+
+  U32* pal = (U32*)I_GetPalette();
+  if (pal && I_VideoBuffer)
+  {
+    for (U64 y=0; y<doom_height; y++)
+    {
+      U8* src = I_VideoBuffer + y*doom_width;
+      U32* dst = (U32*)(frame + y*doom_width*4);
+      for (U64 x=0; x<doom_width; x++)
+      {
+        U8 pix = *src++;
+        *dst++ = pal[pix] | 0xff000000;
+      }
+    }
+  }
+}
+
+internal Vec2F32
+df_doom_view_state__screen_from_canvas_pos(DF_DoomViewState *vs, Rng2F32 rect, Vec2F32 cvs)
+{
+  Vec2F32 scr =
+  {
+    (rect.x0+rect.x1)/2 + (cvs.x - vs->view_center_pos.x) * vs->zoom,
+    (rect.y0+rect.y1)/2 + (cvs.y - vs->view_center_pos.y) * vs->zoom,
+  };
+  return scr;
+}
+
+internal Rng2F32
+df_doom_view_state__screen_from_canvas_rect(DF_DoomViewState *vs, Rng2F32 rect, Rng2F32 cvs)
+{
+  Rng2F32 scr = r2f32(df_doom_view_state__screen_from_canvas_pos(vs, rect, cvs.p0), df_doom_view_state__screen_from_canvas_pos(vs, rect, cvs.p1));
+  return scr;
+}
+
+internal Vec2F32
+df_doom_view_state__canvas_from_screen_pos(DF_DoomViewState *vs, Rng2F32 rect, Vec2F32 scr)
+{
+  Vec2F32 cvs =
+  {
+    (scr.x - (rect.x0+rect.x1)/2) / vs->zoom + vs->view_center_pos.x,
+    (scr.y - (rect.y0+rect.y1)/2) / vs->zoom + vs->view_center_pos.y,
+  };
+  return cvs;
+}
+
+internal Rng2F32
+df_doom_view_state__canvas_from_screen_rect(DF_DoomViewState *vs, Rng2F32 rect, Rng2F32 scr)
+{
+  Rng2F32 cvs = r2f32(df_doom_view_state__canvas_from_screen_pos(vs, rect, scr.p0), df_doom_view_state__canvas_from_screen_pos(vs, rect, scr.p1));
+  return cvs;
+}
+
+internal DF_DoomTopologyInfo
+df_vr_doom_topology_info_from_cfg(DBGI_Scope *scope, DF_CtrlCtx *ctrl_ctx, EVAL_ParseCtx *parse_ctx, EVAL_String2ExprMap *macro_map, DF_CfgNode *cfg)
+{
+  DF_DoomTopologyInfo info = {0};
+  info.width = doom_width;
+  info.height = doom_height; 
+  return info;
+}
+
+internal UI_BOX_CUSTOM_DRAW(df_vr_doom_box_draw)
+{
+  DF_VR_DoomBoxDrawData *draw_data = (DF_VR_DoomBoxDrawData *)user_data;
+  Vec4F32 bg_color = box->background_color;
+  d_img(box->rect, draw_data->src, draw_data->texture, v4f32(1, 1, 1, 1), 0, 0, 0);
+  if(r_handle_match(draw_data->texture, r_handle_zero()))
+  {
+    d_rect(box->rect, v4f32(0, 0, 0, 1), 0, 0, 0);
+  }
+  d_rect(box->rect, v4f32(bg_color.x*bg_color.w, bg_color.y*bg_color.w, bg_color.z*bg_color.w, 1.f), 0, 0, 0);
+  if(draw_data->hovered)
+  {
+    Vec4F32 indicator_color = df_rgba_from_theme_color(DF_ThemeColor_PlainBorder);
+    indicator_color.w = 1.f;
+    d_rect(pad_2f32(r2f32p(box->rect.x0 + draw_data->mouse_px.x*draw_data->ui_per_bmp_px,
+                           box->rect.y0 + draw_data->mouse_px.y*draw_data->ui_per_bmp_px,
+                           box->rect.x0 + draw_data->mouse_px.x*draw_data->ui_per_bmp_px + draw_data->ui_per_bmp_px,
+                           box->rect.y0 + draw_data->mouse_px.y*draw_data->ui_per_bmp_px + draw_data->ui_per_bmp_px),
+                    3.f),
+           indicator_color, 3.f, 4.f, 1.f);
+  }
+}
+
+DF_CORE_VIEW_RULE_VIZ_BLOCK_PROD_FUNCTION_DEF(doom)
+{
+  //
+  // I have no idea what is this ???
+  //
+  DF_EvalVizBlock *vb = df_eval_viz_block_begin(arena, DF_EvalVizBlockKind_Canvas, key, df_expand_key_make(df_hash_from_expand_key(key), 1), depth);
+  vb->eval = eval;
+  vb->string = string;
+  vb->cfg_table = *cfg_table;
+  vb->visual_idx_range = r1u64(0, 8);
+  vb->semantic_idx_range = r1u64(0, 1);
+  df_eval_viz_block_end(out, vb);
+}
+
+DF_GFX_VIEW_RULE_ROW_UI_FUNCTION_DEF(doom)
+{
+  DF_DoomTopologyInfo topology = df_vr_doom_topology_info_from_cfg(scope, ctrl_ctx, parse_ctx, macro_map, cfg);
+  UI_Font(df_font_from_slot(DF_FontSlot_Code)) UI_TextColor(df_rgba_from_theme_color(DF_ThemeColor_WeakText))
+    ui_labelf("Doom (%I64u x %I64u)", topology.width, topology.height);
+}
+
+DF_GFX_VIEW_RULE_BLOCK_UI_FUNCTION_DEF(doom)
+{
+  Temp scratch = scratch_begin(0, 0);
+  HS_Scope *hs_scope = hs_scope_open();
+  TEX_Scope *tex_scope = tex_scope_open();
+  DF_VR_DoomState *state = df_view_rule_block_user_state(key, DF_VR_DoomState);
+  
+  DF_DoomTopologyInfo topology_info = df_vr_doom_topology_info_from_cfg(dbgi_scope, 0, 0, 0, cfg);
+  U64 expected_size = topology_info.width*topology_info.height;
+  
+  // @@@ how to not reallocate???
+
+  U128 texture_key = { 666, 666 };
+  {
+    U64 frame_size = doom_width*doom_height*4;
+    Arena *arena = arena_alloc__sized(256*1024, 256*1024); // 256KB is enough for 320*200*4 image
+    U8 *data = push_array_no_zero(arena,U8,frame_size);
+    doom_do_frame(data);
+    hs_submit_data(texture_key, &arena, str8(data, frame_size));
+  }
+
+  TEX_Topology topology = tex_topology_make(v2s32((S32)topology_info.width, (S32)topology_info.height), R_Tex2DFormat_RGBA8);
+  R_Handle texture = tex_texture_from_key_topology(tex_scope, texture_key, topology);
+  
+  //////////////////////////////
+  //- rjf: animate
+  //
+
+  df_gfx_request_frame();
+  
+  //////////////////////////////
+  //- rjf: build preview
+  //
+  {
+    F32 img_dim = dim.y - ui_top_font_size()*2.f;
+    UI_Padding(ui_pct(1.f, 0.f))
+      UI_PrefWidth(ui_px(img_dim*((F32)topology_info.width/(F32)topology_info.height), 1.f))
+      UI_Column UI_Padding(ui_pct(1.f, 0.f))
+      UI_PrefHeight(ui_px(img_dim, 1.f))
+    {
+      ui_image(texture, R_Tex2DSampleKind_Nearest, r2f32(v2f32(0, 0), v2f32((F32)topology_info.width, (F32)topology_info.height)), v4f32(1, 1, 1, 1), 0.f, str8_lit("image_box"));
+    }
+  }
+  
+  tex_scope_close(tex_scope);
+  hs_scope_close(hs_scope);
+  scratch_end(scratch);
+}
+
+DF_VIEW_SETUP_FUNCTION_DEF(doom)
+{
+  DF_DoomViewState *bvs = df_view_user_state(view, DF_DoomViewState);
+  DBGI_Scope *dbgi_scope = dbgi_scope_open();
+  DF_CfgNode *view_center_cfg = df_cfg_node_child_from_string(cfg_root, str8_lit("view_center"), StringMatchFlag_CaseInsensitive);
+  DF_CfgNode *zoom_cfg = df_cfg_node_child_from_string(cfg_root, str8_lit("zoom"), StringMatchFlag_CaseInsensitive);
+  DF_CfgNode *bitmap_cfg = df_cfg_node_child_from_string(cfg_root, str8_lit("doom"), StringMatchFlag_CaseInsensitive);
+  bvs->view_center_pos.x = (F32)f64_from_str8(bitmap_cfg->first->string);
+  bvs->view_center_pos.y = (F32)f64_from_str8(bitmap_cfg->first->next->string);
+  bvs->zoom = (F32)f64_from_str8(zoom_cfg->first->string);
+  bvs->top = df_vr_doom_topology_info_from_cfg(dbgi_scope, 0, 0, 0, bitmap_cfg);
+  if(bvs->zoom == 0)
+  {
+    bvs->zoom = 1.f;
+  }
+  dbgi_scope_close(dbgi_scope);
+}
+
+DF_VIEW_STRING_FROM_STATE_FUNCTION_DEF(doom)
+{
+  DF_DoomViewState *vs = df_view_user_state(view, DF_DoomViewState);
+  String8 result = push_str8f(arena, "view_center:(%.2f %.2f) zoom:(%.2f) doom:(w:%I64u, h:%I64u)",
+                              vs->view_center_pos.x,
+                              vs->view_center_pos.y,
+                              vs->zoom,
+                              vs->top.width,
+                              vs->top.height);
+  return result;
+}
+
+DF_VIEW_CMD_FUNCTION_DEF(doom)
+{
+}
+
+internal UI_BOX_CUSTOM_DRAW(df_doom_view_canvas_box_draw)
+{
+  DF_DoomViewState *bvs = (DF_DoomViewState *)user_data;
+  Rng2F32 rect_scrn = box->rect;
+  Rng2F32 rect_cvs = df_doom_view_state__canvas_from_screen_rect(bvs, rect_scrn, rect_scrn);
+  F32 grid_cell_size_cvs = box->font_size*10.f;
+  F32 grid_line_thickness_px = Max(2.f, box->font_size*0.1f);
+  Vec4F32 grid_line_color = df_rgba_from_theme_color(DF_ThemeColor_WeakText);
+  for(EachEnumVal(Axis2, axis))
+  {
+    for(F32 v = rect_cvs.p0.v[axis] - mod_f32(rect_cvs.p0.v[axis], grid_cell_size_cvs);
+        v < rect_cvs.p1.v[axis];
+        v += grid_cell_size_cvs)
+    {
+      Vec2F32 p_cvs = {0};
+      p_cvs.v[axis] = v;
+      Vec2F32 p_scr = df_doom_view_state__screen_from_canvas_pos(bvs, rect_scrn, p_cvs);
+      Rng2F32 rect = {0};
+      rect.p0.v[axis] = p_scr.v[axis] - grid_line_thickness_px/2;
+      rect.p1.v[axis] = p_scr.v[axis] + grid_line_thickness_px/2;
+      rect.p0.v[axis2_flip(axis)] = box->rect.p0.v[axis2_flip(axis)];
+      rect.p1.v[axis2_flip(axis)] = box->rect.p1.v[axis2_flip(axis)];
+      d_rect(rect, grid_line_color, 0, 0, 1.f);
+    }
+  }
+}
+
+DF_VIEW_UI_FUNCTION_DEF(doom)
+{
+  DF_DoomViewState *bvs = df_view_user_state(view, DF_DoomViewState);
+  Temp scratch = scratch_begin(0, 0);
+  DBGI_Scope *dbgi_scope = dbgi_scope_open();
+  HS_Scope *hs_scope = hs_scope_open();
+  TEX_Scope *tex_scope = tex_scope_open();
+
+  // @@@ how to not reallocate???
+
+  U128 texture_key = { 666, 666 };
+  {
+    U64 frame_size = doom_width*doom_height*4;
+    Arena *arena = arena_alloc__sized(256*1024, 256*1024); // 256KB is enough for 320*200*4 image
+    U8 *data = push_array_no_zero(arena,U8,frame_size);
+    doom_do_frame(data);
+    hs_submit_data(texture_key, &arena, str8(data, frame_size));
+  }
+
+  TEX_Topology topology = tex_topology_make(v2s32((S32)bvs->top.width, (S32)bvs->top.height), R_Tex2DFormat_RGBA8);
+  R_Handle texture = tex_texture_from_key_topology(tex_scope, texture_key, topology);
+  
+  //////////////////////////////
+  //- rjf: build canvas box
+  //
+  UI_Box *canvas_box = &ui_g_nil_box;
+  Vec2F32 canvas_dim = dim_2f32(rect);
+  Rng2F32 canvas_rect = r2f32p(0, 0, canvas_dim.x, canvas_dim.y);
+  UI_Rect(canvas_rect)
+  {
+    canvas_box = ui_build_box_from_stringf(UI_BoxFlag_Clip|UI_BoxFlag_Clickable|UI_BoxFlag_Scroll, "bmp_canvas_%p", view);
+    ui_box_equip_custom_draw(canvas_box, df_doom_view_canvas_box_draw, bvs);
+  }
+  
+  //////////////////////////////
+  //- rjf: animate
+  //
+
+  df_gfx_request_frame();
+
+  //////////////////////////////
+  //- rjf: canvas box interaction
+  //
+  {
+    UI_Signal canvas_sig = ui_signal_from_box(canvas_box);
+    if(ui_dragging(canvas_sig))
+    {
+      if(ui_pressed(canvas_sig))
+      {
+        DF_CmdParams p = df_cmd_params_from_view(ws, panel, view);
+        df_push_cmd__root(&p, df_cmd_spec_from_core_cmd_kind(DF_CoreCmdKind_FocusPanel));
+        ui_store_drag_struct(&bvs->view_center_pos);
+      }
+      Vec2F32 start_view_center_pos = *ui_get_drag_struct(Vec2F32);
+      Vec2F32 drag_delta_scr = ui_drag_delta();
+      Vec2F32 drag_delta_cvs = scale_2f32(drag_delta_scr, 1.f/bvs->zoom);
+      Vec2F32 new_view_center_pos = sub_2f32(start_view_center_pos, drag_delta_cvs);
+      bvs->view_center_pos = new_view_center_pos;
+    }
+    if(canvas_sig.scroll.y != 0)
+    {
+      F32 new_zoom = bvs->zoom - bvs->zoom*canvas_sig.scroll.y/10.f;
+      new_zoom = Clamp(1.f/256.f, new_zoom, 256.f);
+      Vec2F32 mouse_scr_pre = sub_2f32(ui_mouse(), rect.p0);
+      Vec2F32 mouse_cvs = df_doom_view_state__canvas_from_screen_pos(bvs, canvas_rect, mouse_scr_pre);
+      bvs->zoom = new_zoom;
+      Vec2F32 mouse_scr_pst = df_doom_view_state__screen_from_canvas_pos(bvs, canvas_rect, mouse_cvs);
+      Vec2F32 drift_scr = sub_2f32(mouse_scr_pst, mouse_scr_pre);
+      bvs->view_center_pos = add_2f32(bvs->view_center_pos, scale_2f32(drift_scr, 1.f/new_zoom));
+    }
+    if(ui_double_clicked(canvas_sig))
+    {
+      ui_kill_action();
+      MemoryZeroStruct(&bvs->view_center_pos);
+      bvs->zoom = 1.f;
+    }
+  }
+  
+  //////////////////////////////
+  //- rjf: build image
+  //
+  UI_Parent(canvas_box)
+  {
+    Rng2F32 img_rect_cvs = r2f32p(-topology.dim.x/2, -topology.dim.y/2, +topology.dim.x/2, +topology.dim.y/2);
+    Rng2F32 img_rect_scr = df_doom_view_state__screen_from_canvas_rect(bvs, canvas_rect, img_rect_cvs);
+    UI_Rect(img_rect_scr) UI_Flags(UI_BoxFlag_DrawBorder|UI_BoxFlag_DrawDropShadow|UI_BoxFlag_Floating)
+    {
+      ui_image(texture, R_Tex2DSampleKind_Nearest, r2f32p(0, 0, (F32)bvs->top.width, (F32)bvs->top.height), v4f32(1, 1, 1, 1), 0, str8_lit("bmp_image"));
+    }
+  }
+  
+  hs_scope_close(hs_scope);
+  tex_scope_close(tex_scope);
+  dbgi_scope_close(dbgi_scope);
+  scratch_end(scratch);
+}
+
+////////////////////////////////
 //~ rjf: "geo"
 
 internal DF_GeoTopologyInfo

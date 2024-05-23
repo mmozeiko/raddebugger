@@ -92,36 +92,36 @@ DF_DefaultBindingTable:
   
   //- rjf: meta controls
   { "edit"                        F2        0        0         0          }
-  { "accept"                      Return    0        0         0          }
-  { "cancel"                      Esc       0        0         0          }
+//  { "accept"                      Return    0        0         0          }
+//  { "cancel"                      Esc       0        0         0          }
   
   //- rjf: directional movement & text controls
-  { "move_left"                   Left      0        0         0          }
-  { "move_right"                  Right     0        0         0          }
-  { "move_up"                     Up        0        0         0          }
-  { "move_down"                   Down      0        0         0          }
-  { "move_left_select"            Left      0        shift     0          }
-  { "move_right_select"           Right     0        shift     0          }
-  { "move_up_select"              Up        0        shift     0          }
-  { "move_down_select"            Down      0        shift     0          }
-  { "move_left_chunk"             Left      ctrl     0         0          }
-  { "move_right_chunk"            Right     ctrl     0         0          }
-  { "move_up_chunk"               Up        ctrl     0         0          }
-  { "move_down_chunk"             Down      ctrl     0         0          }
+//  { "move_left"                   Left      0        0         0          }
+//  { "move_right"                  Right     0        0         0          }
+//  { "move_up"                     Up        0        0         0          }
+//  { "move_down"                   Down      0        0         0          }
+//  { "move_left_select"            Left      0        shift     0          }
+//  { "move_right_select"           Right     0        shift     0          }
+//  { "move_up_select"              Up        0        shift     0          }
+//  { "move_down_select"            Down      0        shift     0          }
+//  { "move_left_chunk"             Left      ctrl     0         0          }
+//  { "move_right_chunk"            Right     ctrl     0         0          }
+//  { "move_up_chunk"               Up        ctrl     0         0          }
+//  { "move_down_chunk"             Down      ctrl     0         0          }
   { "move_up_page"                PageUp    0        0         0          }
   { "move_down_page"              PageDown  0        0         0          }
   { "move_up_whole"               Home      ctrl     0         0          }
   { "move_down_whole"             End       ctrl     0         0          }
-  { "move_left_chunk_select"      Left      ctrl     shift     0          }
-  { "move_right_chunk_select"     Right     ctrl     shift     0          }
-  { "move_up_chunk_select"        Up        ctrl     shift     0          }
-  { "move_down_chunk_select"      Down      ctrl     shift     0          }
+//  { "move_left_chunk_select"      Left      ctrl     shift     0          }
+//  { "move_right_chunk_select"     Right     ctrl     shift     0          }
+//  { "move_up_chunk_select"        Up        ctrl     shift     0          }
+//  { "move_down_chunk_select"      Down      ctrl     shift     0          }
   { "move_up_page_select"         PageUp    0        shift     0          }
   { "move_down_page_select"       PageDown  0        shift     0          }
   { "move_up_whole_select"        Home      ctrl     shift     0          }
   { "move_down_whole_select"      End       ctrl     shift     0          }
-  { "move_up_reorder"             Up        0        0         alt        }
-  { "move_down_reorder"           Down      0        0         alt        }
+//  { "move_up_reorder"             Up        0        0         alt        }
+//  { "move_down_reorder"           Down      0        0         alt        }
   { "move_home"                   Home      0        0         0          }
   { "move_end"                    End       0        0         0          }
   { "move_home_select"            Home      0        shift     0          }
@@ -259,6 +259,7 @@ DF_GfxViewRuleTable:
   {"text"          -   -   -   x   x   "Text"                          }
   {"disasm"        -   -   -   x   x   "Disassembly"                   }
   {"bitmap"        -   -   x   x   x   "Bitmap"                        }
+  {"doom"          -   -   x   x   x   "Doom"                          }
   {"geo"           -   -   x   x   x   "Geometry"                      }
 }
 

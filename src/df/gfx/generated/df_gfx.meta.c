@@ -598,7 +598,7 @@ str8_lit_comp("goto_name"),
 str8_lit_comp("function_breakpoint"),
 };
 
-DF_StringBindingPair df_g_default_binding_table[104] =
+DF_StringBindingPair df_g_default_binding_table[84] =
 {
 {str8_lit_comp("kill_all"), {OS_Key_F5, 0  |OS_EventFlag_Shift }},
 {str8_lit_comp("step_into_inst"), {OS_Key_F11, 0   |OS_EventFlag_Alt}},
@@ -645,34 +645,14 @@ DF_StringBindingPair df_g_default_binding_table[104] =
 {str8_lit_comp("load_user"), {OS_Key_O, 0 |OS_EventFlag_Ctrl |OS_EventFlag_Shift |OS_EventFlag_Alt}},
 {str8_lit_comp("load_profile"), {OS_Key_O, 0 |OS_EventFlag_Ctrl  |OS_EventFlag_Alt}},
 {str8_lit_comp("edit"), {OS_Key_F2, 0   }},
-{str8_lit_comp("accept"), {OS_Key_Return, 0   }},
-{str8_lit_comp("cancel"), {OS_Key_Esc, 0   }},
-{str8_lit_comp("move_left"), {OS_Key_Left, 0   }},
-{str8_lit_comp("move_right"), {OS_Key_Right, 0   }},
-{str8_lit_comp("move_up"), {OS_Key_Up, 0   }},
-{str8_lit_comp("move_down"), {OS_Key_Down, 0   }},
-{str8_lit_comp("move_left_select"), {OS_Key_Left, 0  |OS_EventFlag_Shift }},
-{str8_lit_comp("move_right_select"), {OS_Key_Right, 0  |OS_EventFlag_Shift }},
-{str8_lit_comp("move_up_select"), {OS_Key_Up, 0  |OS_EventFlag_Shift }},
-{str8_lit_comp("move_down_select"), {OS_Key_Down, 0  |OS_EventFlag_Shift }},
-{str8_lit_comp("move_left_chunk"), {OS_Key_Left, 0 |OS_EventFlag_Ctrl  }},
-{str8_lit_comp("move_right_chunk"), {OS_Key_Right, 0 |OS_EventFlag_Ctrl  }},
-{str8_lit_comp("move_up_chunk"), {OS_Key_Up, 0 |OS_EventFlag_Ctrl  }},
-{str8_lit_comp("move_down_chunk"), {OS_Key_Down, 0 |OS_EventFlag_Ctrl  }},
 {str8_lit_comp("move_up_page"), {OS_Key_PageUp, 0   }},
 {str8_lit_comp("move_down_page"), {OS_Key_PageDown, 0   }},
 {str8_lit_comp("move_up_whole"), {OS_Key_Home, 0 |OS_EventFlag_Ctrl  }},
 {str8_lit_comp("move_down_whole"), {OS_Key_End, 0 |OS_EventFlag_Ctrl  }},
-{str8_lit_comp("move_left_chunk_select"), {OS_Key_Left, 0 |OS_EventFlag_Ctrl |OS_EventFlag_Shift }},
-{str8_lit_comp("move_right_chunk_select"), {OS_Key_Right, 0 |OS_EventFlag_Ctrl |OS_EventFlag_Shift }},
-{str8_lit_comp("move_up_chunk_select"), {OS_Key_Up, 0 |OS_EventFlag_Ctrl |OS_EventFlag_Shift }},
-{str8_lit_comp("move_down_chunk_select"), {OS_Key_Down, 0 |OS_EventFlag_Ctrl |OS_EventFlag_Shift }},
 {str8_lit_comp("move_up_page_select"), {OS_Key_PageUp, 0  |OS_EventFlag_Shift }},
 {str8_lit_comp("move_down_page_select"), {OS_Key_PageDown, 0  |OS_EventFlag_Shift }},
 {str8_lit_comp("move_up_whole_select"), {OS_Key_Home, 0 |OS_EventFlag_Ctrl |OS_EventFlag_Shift }},
 {str8_lit_comp("move_down_whole_select"), {OS_Key_End, 0 |OS_EventFlag_Ctrl |OS_EventFlag_Shift }},
-{str8_lit_comp("move_up_reorder"), {OS_Key_Up, 0   |OS_EventFlag_Alt}},
-{str8_lit_comp("move_down_reorder"), {OS_Key_Down, 0   |OS_EventFlag_Alt}},
 {str8_lit_comp("move_home"), {OS_Key_Home, 0   }},
 {str8_lit_comp("move_end"), {OS_Key_End, 0   }},
 {str8_lit_comp("move_home_select"), {OS_Key_Home, 0  |OS_EventFlag_Shift }},
@@ -720,7 +700,7 @@ str8_lit_comp("open_user"),
 str8_lit_comp("open_profile"),
 };
 
-DF_GfxViewRuleSpecInfo df_g_gfx_view_rule_spec_info_table[14] =
+DF_GfxViewRuleSpecInfo df_g_gfx_view_rule_spec_info_table[15] =
 {
 { str8_lit_comp("array"), (DF_GfxViewRuleSpecInfoFlag_VizRowProd*0)|(DF_GfxViewRuleSpecInfoFlag_LineStringize*0)|(DF_GfxViewRuleSpecInfoFlag_RowUI*0)|(DF_GfxViewRuleSpecInfoFlag_BlockUI*0),  0,  0,  0,  0, str8_lit_comp("") },
 { str8_lit_comp("list"), (DF_GfxViewRuleSpecInfoFlag_VizRowProd*1)|(DF_GfxViewRuleSpecInfoFlag_LineStringize*0)|(DF_GfxViewRuleSpecInfoFlag_RowUI*0)|(DF_GfxViewRuleSpecInfoFlag_BlockUI*0), DF_GFX_VIEW_RULE_VIZ_ROW_PROD_FUNCTION_NAME(list) ,  0,  0,  0, str8_lit_comp("") },
@@ -735,14 +715,16 @@ DF_GfxViewRuleSpecInfo df_g_gfx_view_rule_spec_info_table[14] =
 { str8_lit_comp("text"), (DF_GfxViewRuleSpecInfoFlag_VizRowProd*0)|(DF_GfxViewRuleSpecInfoFlag_LineStringize*0)|(DF_GfxViewRuleSpecInfoFlag_RowUI*0)|(DF_GfxViewRuleSpecInfoFlag_BlockUI*1),  0,  0,  0, DF_GFX_VIEW_RULE_BLOCK_UI_FUNCTION_NAME(text) , str8_lit_comp("text_view_rule") },
 { str8_lit_comp("disasm"), (DF_GfxViewRuleSpecInfoFlag_VizRowProd*0)|(DF_GfxViewRuleSpecInfoFlag_LineStringize*0)|(DF_GfxViewRuleSpecInfoFlag_RowUI*0)|(DF_GfxViewRuleSpecInfoFlag_BlockUI*1),  0,  0,  0, DF_GFX_VIEW_RULE_BLOCK_UI_FUNCTION_NAME(disasm) , str8_lit_comp("disasm_view_rule") },
 { str8_lit_comp("bitmap"), (DF_GfxViewRuleSpecInfoFlag_VizRowProd*0)|(DF_GfxViewRuleSpecInfoFlag_LineStringize*0)|(DF_GfxViewRuleSpecInfoFlag_RowUI*1)|(DF_GfxViewRuleSpecInfoFlag_BlockUI*1),  0,  0, DF_GFX_VIEW_RULE_ROW_UI_FUNCTION_NAME(bitmap) , DF_GFX_VIEW_RULE_BLOCK_UI_FUNCTION_NAME(bitmap) , str8_lit_comp("bitmap_view_rule") },
+{ str8_lit_comp("doom"), (DF_GfxViewRuleSpecInfoFlag_VizRowProd*0)|(DF_GfxViewRuleSpecInfoFlag_LineStringize*0)|(DF_GfxViewRuleSpecInfoFlag_RowUI*1)|(DF_GfxViewRuleSpecInfoFlag_BlockUI*1),  0,  0, DF_GFX_VIEW_RULE_ROW_UI_FUNCTION_NAME(doom) , DF_GFX_VIEW_RULE_BLOCK_UI_FUNCTION_NAME(doom) , str8_lit_comp("doom_view_rule") },
 { str8_lit_comp("geo"), (DF_GfxViewRuleSpecInfoFlag_VizRowProd*0)|(DF_GfxViewRuleSpecInfoFlag_LineStringize*0)|(DF_GfxViewRuleSpecInfoFlag_RowUI*1)|(DF_GfxViewRuleSpecInfoFlag_BlockUI*1),  0,  0, DF_GFX_VIEW_RULE_ROW_UI_FUNCTION_NAME(geo) , DF_GFX_VIEW_RULE_BLOCK_UI_FUNCTION_NAME(geo) , str8_lit_comp("geo_view_rule") },
 };
 
-DF_ViewSpecInfo df_g_gfx_view_rule_tab_view_spec_info_table[4] =
+DF_ViewSpecInfo df_g_gfx_view_rule_tab_view_spec_info_table[5] =
 {
 { DF_ViewSpecFlag_CanSerialize|DF_ViewSpecFlag_CanSerializeQuery, str8_lit_comp("text_view_rule"), str8_lit_comp("Text"), DF_NameKind_Null, DF_IconKind_Binoculars, DF_VIEW_SETUP_FUNCTION_NAME(text), DF_VIEW_STRING_FROM_STATE_FUNCTION_NAME(text), DF_VIEW_CMD_FUNCTION_NAME(text), DF_VIEW_UI_FUNCTION_NAME(text) },
 { DF_ViewSpecFlag_CanSerialize|DF_ViewSpecFlag_CanSerializeQuery, str8_lit_comp("disasm_view_rule"), str8_lit_comp("Disassembly"), DF_NameKind_Null, DF_IconKind_Binoculars, DF_VIEW_SETUP_FUNCTION_NAME(disasm), DF_VIEW_STRING_FROM_STATE_FUNCTION_NAME(disasm), DF_VIEW_CMD_FUNCTION_NAME(disasm), DF_VIEW_UI_FUNCTION_NAME(disasm) },
 { DF_ViewSpecFlag_CanSerialize|DF_ViewSpecFlag_CanSerializeQuery, str8_lit_comp("bitmap_view_rule"), str8_lit_comp("Bitmap"), DF_NameKind_Null, DF_IconKind_Binoculars, DF_VIEW_SETUP_FUNCTION_NAME(bitmap), DF_VIEW_STRING_FROM_STATE_FUNCTION_NAME(bitmap), DF_VIEW_CMD_FUNCTION_NAME(bitmap), DF_VIEW_UI_FUNCTION_NAME(bitmap) },
+{ DF_ViewSpecFlag_CanSerialize|DF_ViewSpecFlag_CanSerializeQuery, str8_lit_comp("doom_view_rule"), str8_lit_comp("Doom"), DF_NameKind_Null, DF_IconKind_Binoculars, DF_VIEW_SETUP_FUNCTION_NAME(doom), DF_VIEW_STRING_FROM_STATE_FUNCTION_NAME(doom), DF_VIEW_CMD_FUNCTION_NAME(doom), DF_VIEW_UI_FUNCTION_NAME(doom) },
 { DF_ViewSpecFlag_CanSerialize|DF_ViewSpecFlag_CanSerializeQuery, str8_lit_comp("geo_view_rule"), str8_lit_comp("Geometry"), DF_NameKind_Null, DF_IconKind_Binoculars, DF_VIEW_SETUP_FUNCTION_NAME(geo), DF_VIEW_STRING_FROM_STATE_FUNCTION_NAME(geo), DF_VIEW_CMD_FUNCTION_NAME(geo), DF_VIEW_UI_FUNCTION_NAME(geo) },
 };
 

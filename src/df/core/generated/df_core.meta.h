@@ -364,6 +364,7 @@ DF_CoreViewRuleKind_Text,
 DF_CoreViewRuleKind_Disasm,
 DF_CoreViewRuleKind_Graph,
 DF_CoreViewRuleKind_Bitmap,
+DF_CoreViewRuleKind_Doom,
 DF_CoreViewRuleKind_Geo,
 DF_CoreViewRuleKind_COUNT,
 } DF_CoreViewRuleKind;
@@ -432,6 +433,7 @@ DF_CORE_VIEW_RULE_VIZ_BLOCK_PROD_FUNCTION_DEF(text);
 DF_CORE_VIEW_RULE_VIZ_BLOCK_PROD_FUNCTION_DEF(disasm);
 DF_CORE_VIEW_RULE_VIZ_BLOCK_PROD_FUNCTION_DEF(graph);
 DF_CORE_VIEW_RULE_VIZ_BLOCK_PROD_FUNCTION_DEF(bitmap);
+DF_CORE_VIEW_RULE_VIZ_BLOCK_PROD_FUNCTION_DEF(doom);
 DF_CORE_VIEW_RULE_VIZ_BLOCK_PROD_FUNCTION_DEF(geo);
 
 struct{String8 mnemonic; String8 summary;} df_g_inst_table_x64[] =

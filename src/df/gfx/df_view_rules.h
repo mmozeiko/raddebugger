@@ -107,6 +107,48 @@ internal Rng2F32 df_bitmap_view_state__canvas_from_screen_rect(DF_BitmapViewStat
 internal DF_BitmapTopologyInfo df_vr_bitmap_topology_info_from_cfg(DBGI_Scope *scope, DF_CtrlCtx *ctrl_ctx, EVAL_ParseCtx *parse_ctx, EVAL_String2ExprMap *macro_map, DF_CfgNode *cfg);
 
 ////////////////////////////////
+
+typedef struct DF_DoomTopologyInfo DF_DoomTopologyInfo;
+struct DF_DoomTopologyInfo
+{
+  U64 width;
+  U64 height;
+};
+
+typedef struct DF_DoomViewState DF_DoomViewState;
+struct DF_DoomViewState
+{
+  Vec2F32 view_center_pos;
+  F32 zoom;
+  DF_DoomTopologyInfo top;
+};
+
+typedef struct DF_VR_DoomState DF_VR_DoomState;
+struct DF_VR_DoomState
+{
+  int dummy;
+//  U64 last_open_frame_idx;
+//  F32 loaded_t;
+};
+
+typedef struct DF_VR_DoomBoxDrawData DF_VR_DoomBoxDrawData;
+struct DF_VR_DoomBoxDrawData
+{
+  Rng2F32 src;
+  R_Handle texture;
+//  F32 loaded_t;
+  B32 hovered;
+  Vec2S32 mouse_px;
+  F32 ui_per_bmp_px;
+};
+
+internal Vec2F32 df_doom_view_state__screen_from_canvas_pos(DF_DoomViewState *vs, Rng2F32 rect, Vec2F32 cvs);
+internal Rng2F32 df_doom_view_state__screen_from_canvas_rect(DF_DoomViewState *vs, Rng2F32 rect, Rng2F32 cvs);
+internal Vec2F32 df_doom_view_state__canvas_from_screen_pos(DF_DoomViewState *vs, Rng2F32 rect, Vec2F32 scr);
+internal Rng2F32 df_doom_view_state__canvas_from_screen_rect(DF_DoomViewState *vs, Rng2F32 rect, Rng2F32 scr);
+internal DF_DoomTopologyInfo df_vr_doom_topology_info_from_cfg(DBGI_Scope *scope, DF_CtrlCtx *ctrl_ctx, EVAL_ParseCtx *parse_ctx, EVAL_String2ExprMap *macro_map, DF_CfgNode *cfg);
+
+////////////////////////////////
 //~ rjf: "geo"
 
 typedef struct DF_GeoTopologyInfo DF_GeoTopologyInfo;
